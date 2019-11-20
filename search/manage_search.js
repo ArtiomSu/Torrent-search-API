@@ -4,7 +4,9 @@ var one337 = require('./one337');
 
 var initiate = function (data) {
     //console.log("wtf?", data);
-    var data = {sort: data.sort_1, query:data.query};
+    const query = encodeURIComponent(data.query);
+    console.log(query);
+    var data = {sort: data.sort_1, query:query};
     return new Promise(function (resolve, reject) {
         one337(data)
             .then(function (result){
