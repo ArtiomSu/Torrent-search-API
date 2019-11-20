@@ -12,7 +12,7 @@ router.get('/', function(req, res, next) {
   res.json({status: "ok"});
 });
 
-router.post('/', function(req, res, next) {
+router.post('/search', function(req, res, next) {
   if(req.body && req.body.query && req.body.sort && !isNaN(req.body.sort)){
     //check search length
     if(req.body.query.length <=3 || req.body.query.length >= 40){
@@ -25,8 +25,9 @@ router.post('/', function(req, res, next) {
           return res.json({data: result});
         }, function (err) {
           console.log(err);
-            res.status(503);
-            return res.json({error: "getting torrents failed"});
+            //res.status(503);
+            //return res.json({error: "getting torrents failed"});
+            return next(new Error('GetTorrentsFailed'));
         }
     );
 
@@ -34,6 +35,39 @@ router.post('/', function(req, res, next) {
   }
   else{
     return next(new Error('SearchParameters'))
+  }
+});
+
+router.post('/magnet', function(req, res, next) {
+  if(req.body && req.body.url){
+
+    manage_search.get_magnet(req.body.url)
+        .then(function (result){
+              //console.log("promise yoke", result);
+              if(result === 0){
+                //return res.json({error: "getting magnet failed"});
+                let error = new Error('MagnetFailed');
+                error.url = req.body.url;
+                return next(error);
+              } else if(result === -1){
+                let error = new Error('MagnetUnsupportedUrl');
+                error.url = req.body.url;
+                return next(error);
+                //return res.json({error: "unsupported url supplied"});
+              }
+              return res.json({data: result});
+            }, function (err) {
+              console.log(err);
+              //res.status(503);
+              let error = new Error('MagnetFailed');
+              error.url = req.body.url;
+              return next(error);
+              //return res.json({error: "getting magnet failed"});
+            }
+        );
+  }
+  else{
+    return next(new Error('MagnetParameters'))
   }
 });
 

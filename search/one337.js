@@ -54,20 +54,6 @@ var one337 = function(data){
             url: url,
         })
             .then(function (htmlString) {
-                //console.log(htmlString);
-
-                // var html_parser_handler = new htmlparser.DefaultHandler(function (error, dom) {
-                //     if (error)
-                //         console.log("html parser error");
-                //     else
-                //         console.log("html parser done?");
-                // });
-                //
-                // var html_parser = new htmlparser.Parser(html_parser_handler);
-                // html_parser.parseComplete(htmlString);
-                //
-                // console.log(html_parser_handler.dom, false, null);
-
                 var torrents = [];
 
                 const cheerio$ = cheerio.load(htmlString);
@@ -110,4 +96,35 @@ var one337 = function(data){
     });
 };
 
-module.exports = one337;
+var magnet = function(url){
+    return new Promise(function (resolve, reject) {
+        cloudscraper({
+            method: 'GET',
+            url: url,
+        })
+            .then(function (htmlString) {
+                 const cheerio$ = cheerio.load(htmlString);
+
+                cheerio$('ul.dropdown-menu li a').each(function(){
+                    var temp = cheerio$(this).attr('href');
+                    //console.log(temp);
+
+                    if(temp.startsWith("magnet:")){
+                        resolve(temp);
+                    }
+
+                });
+
+                resolve(0);
+            })
+            .catch(function (err) {
+                console.log(err);
+                reject(err);
+            });
+    });
+};
+
+module.exports = {
+    search: one337,
+    magnet: magnet
+};
