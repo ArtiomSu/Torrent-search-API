@@ -22,6 +22,12 @@ var router = function (err, req, res, next) {
                 return res.json({error: "getting torrents failed"});
                 break;
 
+            case "GetTorrentsCapcha":
+                console.log("error: getting torrents failed cause captcha");
+                res.status(503);
+                return res.json({error: "getting torrents failed cause a captcha challenge cannot be completed"});
+                break;
+
             case "MagnetParameters":
                 console.log("error: invalid url parameters");
                 res.status(418);

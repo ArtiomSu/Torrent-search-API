@@ -15,7 +15,11 @@ var initiate = function (data) {
                 resolve(result);
             }, function (err) {
                 console.log(err);
-                reject(0);
+                if(err.message === "captcha"){
+                    reject(5);
+                }else{
+                    reject(0);
+                }
             }
         );
     });
@@ -32,7 +36,12 @@ var get_magnet = function (url) {
                         resolve(result);
                     }, function (err) {
                         console.log(err);
-                        reject(0);
+                        if(err.message === "captcha"){
+                            reject(5);
+                        }else{
+                            reject(0);
+                        }
+
                     }
                 );
         }else{

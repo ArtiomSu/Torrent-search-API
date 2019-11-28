@@ -25,9 +25,15 @@ router.post('/search', function(req, res, next) {
           return res.json({data: result});
         }, function (err) {
           console.log(err);
+
+          if(err === 5){
+              return next(new Error('GetTorrentsCapcha'));
+          }else{
+              return next(new Error('GetTorrentsFailed'));
+          }
             //res.status(503);
             //return res.json({error: "getting torrents failed"});
-            return next(new Error('GetTorrentsFailed'));
+
         }
     );
 
